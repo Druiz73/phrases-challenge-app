@@ -2,6 +2,17 @@
 
 A professional-grade React Native application built with Expo, demonstrating advanced React patterns, Clean Architecture, SOLID principles, and performance optimizations.
 
+## 🌐 Live Demo
+
+**[View Live Demo →](https://YOUR_NETLIFY_URL_HERE)**
+
+Try the web version of the app with all features working:
+
+- Add, search, and delete phrases
+- Real-time search with highlighting
+- Responsive design
+- All performance optimizations active
+
 ## 🏗️ Architecture
 
 This project implements **Clean Architecture** with clear separation of concerns across four layers:
