@@ -4,7 +4,7 @@ A professional-grade React Native application built with Expo, demonstrating adv
 
 ## 🌐 Live Demo
 
-**[View Live Demo →](https://YOUR_NETLIFY_URL_HERE)**
+**[View Live Demo →](https://phrases-challenge.netlify.app/)**
 
 Try the web version of the app with all features working:
 
