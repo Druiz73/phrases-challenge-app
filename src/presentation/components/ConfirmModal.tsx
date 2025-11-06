@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Pressable } from 'react-native';
+import React, { memo, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Pressable, Platform } from 'react-native';
 import { colors } from '../../utils/constants/colors';
 import { spacing } from '../../utils/constants/spacing';
 import { typography } from '../theme/typography';
@@ -23,21 +23,54 @@ const ConfirmModalComponent: React.FC<ConfirmModalProps> = ({
   confirmText = 'Delete',
   cancelText = 'Cancel',
 }) => {
+  const confirmButtonRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (visible && Platform.OS === 'web' && confirmButtonRef.current) {
+      const timer = setTimeout(() => {
+        (confirmButtonRef.current as any)?.focus?.();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={onCancel}>
-      <Pressable style={styles.backdrop} onPress={onCancel}>
-        <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
+      <Pressable style={styles.backdrop} onPress={onCancel} aria-label="Close modal">
+        <Pressable
+          style={styles.modalContainer}
+          onPress={(e) => e.stopPropagation()}
+          {...(Platform.OS === 'web'
+            ? {
+                role: 'dialog' as any,
+                'aria-modal': 'true' as any,
+                'aria-labelledby': 'modal-title' as any,
+              }
+            : {})}
+        >
           <View style={styles.modal}>
             <View style={styles.iconContainer}>
-              <Text style={styles.icon}>⚠️</Text>
+              <Text style={styles.icon} role="img" aria-label="Warning">
+                ⚠️
+              </Text>
             </View>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.message}>{message}</Text>
+            <Text style={styles.title} nativeID="modal-title" accessibilityRole="header">
+              {title}
+            </Text>
+            <Text style={styles.message} accessibilityRole="text">
+              {message}
+            </Text>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+              <TouchableOpacity style={styles.cancelButton} onPress={onCancel} accessibilityRole="button" accessibilityLabel={cancelText}>
                 <Text style={styles.cancelButtonText}>{cancelText}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+              <TouchableOpacity
+                ref={confirmButtonRef}
+                style={styles.confirmButton}
+                onPress={onConfirm}
+                accessibilityRole="button"
+                accessibilityLabel={`${confirmText} phrase`}
+              >
                 <Text style={styles.confirmButtonText}>{confirmText}</Text>
               </TouchableOpacity>
             </View>

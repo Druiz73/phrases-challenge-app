@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View, Text, useWindowDimensions, Platform } from 'react-native';
 import { Phrase } from '../../core/entities/Phrase';
 import { PhraseCard } from './PhraseCard';
+import { AriaLiveRegion } from './AriaLiveRegion';
 import { colors } from '../../utils/constants/colors';
 import { spacing } from '../../utils/constants/spacing';
 import { typography } from '../theme/typography';
@@ -15,6 +16,7 @@ interface PhraseGridProps {
 const PhraseGridComponent: React.FC<PhraseGridProps> = ({ phrases, onDeletePhrase, searchTerm }) => {
   const { width } = useWindowDimensions();
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+  const [announcement, setAnnouncement] = useState('');
 
   const getNumColumns = (): number => {
     if (width < 600) return 1;
@@ -24,6 +26,16 @@ const PhraseGridComponent: React.FC<PhraseGridProps> = ({ phrases, onDeletePhras
   };
 
   const numColumns = getNumColumns();
+
+  useEffect(() => {
+    if (searchTerm && searchTerm.trim().length >= 2) {
+      const count = phrases.length;
+      const message = count === 0 ? 'No phrases found' : `${count} phrase${count !== 1 ? 's' : ''} found`;
+      setAnnouncement(message);
+    } else {
+      setAnnouncement('');
+    }
+  }, [phrases.length, searchTerm]);
 
   const renderItem = ({ item }: { item: Phrase }): React.ReactElement => (
     <View style={[styles.cardWrapper, { width: `${100 / numColumns}%` }]}>
@@ -39,19 +51,24 @@ const PhraseGridComponent: React.FC<PhraseGridProps> = ({ phrases, onDeletePhras
   );
 
   return (
-    <FlatList
-      data={phrases}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-      numColumns={numColumns}
-      key={numColumns}
-      contentContainerStyle={styles.container}
-      ListEmptyComponent={renderEmpty}
-      removeClippedSubviews={true}
-      maxToRenderPerBatch={isMobile ? 5 : 10}
-      windowSize={5}
-      initialNumToRender={isMobile ? 5 : 10}
-    />
+    <>
+      <AriaLiveRegion message={announcement} />
+      <FlatList
+        data={phrases}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        numColumns={numColumns}
+        key={numColumns}
+        contentContainerStyle={styles.container}
+        ListEmptyComponent={renderEmpty}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={isMobile ? 5 : 10}
+        windowSize={5}
+        initialNumToRender={isMobile ? 5 : 10}
+        accessibilityRole="list"
+        accessibilityLabel={`List of ${phrases.length} phrase${phrases.length !== 1 ? 's' : ''}`}
+      />
+    </>
   );
 };
 
