@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     padding: 0,
     fontSize: 16,
+    outlineStyle: 'none' as any,
   },
   clearButton: {
     fontSize: 22,

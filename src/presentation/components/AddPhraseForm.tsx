@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     fontSize: 16,
+    outlineStyle: 'none' as any,
   },
   inputMobile: {
     minHeight: 100,
