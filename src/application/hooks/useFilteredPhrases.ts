@@ -1,22 +1,9 @@
 import { useMemo } from 'react';
 import { Phrase } from '../../core/entities/Phrase';
-import { normalizeSearchTerm, createSearchRegex } from '../../utils/helpers';
-
-const MIN_SEARCH_LENGTH = 2;
+import { selectFilteredPhrases } from '../state/selectors';
 
 export const useFilteredPhrases = (phrases: Phrase[], searchTerm: string): Phrase[] => {
   return useMemo(() => {
-    const normalizedTerm = normalizeSearchTerm(searchTerm);
-
-    if (normalizedTerm.length < MIN_SEARCH_LENGTH) {
-      return phrases;
-    }
-
-    const searchRegex = createSearchRegex(normalizedTerm);
-    if (!searchRegex) {
-      return phrases;
-    }
-
-    return phrases.filter((phrase) => searchRegex.test(phrase.text));
+    return selectFilteredPhrases(phrases, searchTerm);
   }, [phrases, searchTerm]);
 };

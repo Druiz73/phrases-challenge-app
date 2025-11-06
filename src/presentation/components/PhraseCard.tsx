@@ -78,19 +78,43 @@ const PhraseCardComponent: React.FC<PhraseCardProps> = ({ phrase, onDelete, sear
     return date.toLocaleDateString();
   };
 
+  const phrasePreview = phrase.text.length > 50 ? phrase.text.substring(0, 50) + '...' : phrase.text;
+
+  const cardProps = isWeb ? { role: 'article' as any } : {};
+
   return (
     <>
-      <Pressable style={({ pressed }) => [styles.card, pressed && styles.cardPressed, isWeb && styles.cardWeb, isWeb && isExpanded && styles.cardExpanded]}>
+      <Pressable
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed, isWeb && styles.cardWeb, isWeb && isExpanded && styles.cardExpanded]}
+        accessibilityLabel={`Phrase: ${phrasePreview}. Created ${formatDate(phrase.createdAt)}`}
+        {...cardProps}
+      >
         <View style={styles.content}>
-          <View style={[isWeb && !isExpanded && styles.textContainerCollapsed]}>{renderHighlightedText()}</View>
+          <View style={[isWeb && !isExpanded && styles.textContainerCollapsed]} accessibilityRole="text">
+            {renderHighlightedText()}
+          </View>
           {isWeb && isLongText && (
-            <TouchableOpacity onPress={toggleExpand} style={styles.expandButton}>
-              <Text style={styles.expandButtonText}>{isExpanded ? '▲ Ver menos' : '▼ Ver más'}</Text>
+            <TouchableOpacity
+              onPress={toggleExpand}
+              style={styles.expandButton}
+              accessibilityRole="button"
+              accessibilityLabel={isExpanded ? 'Show less' : 'Show more'}
+            >
+              <Text style={styles.expandButtonText}>{isExpanded ? '▲ Show less' : '▼ Show more'}</Text>
             </TouchableOpacity>
           )}
-          <Text style={styles.date}>{formatDate(phrase.createdAt)}</Text>
+          <Text style={styles.date} accessibilityRole="text" accessibilityLabel={`Created ${formatDate(phrase.createdAt)}`}>
+            {formatDate(phrase.createdAt)}
+          </Text>
         </View>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={handleDeletePress}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel="Delete phrase"
+          accessibilityHint="Opens confirmation dialog"
+        >
           <Text style={styles.deleteButtonText}>✕</Text>
         </TouchableOpacity>
       </Pressable>
@@ -164,12 +188,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   highlight: {
-    backgroundColor: colors.accentLight,
+    backgroundColor: '#FFF4CC',
     color: colors.text,
-    fontWeight: '700',
-    borderRadius: 4,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
+    fontWeight: '600',
   },
   date: {
     ...typography.caption,
