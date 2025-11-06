@@ -5,6 +5,7 @@ import { ConfirmModal } from './ConfirmModal';
 import { colors } from '../../utils/constants/colors';
 import { spacing } from '../../utils/constants/spacing';
 import { typography } from '../theme/typography';
+import { normalizeSearchTerm, escapeRegExp } from '../../utils/helpers';
 
 interface PhraseCardProps {
   phrase: Phrase;
@@ -36,11 +37,14 @@ const PhraseCardComponent: React.FC<PhraseCardProps> = ({ phrase, onDelete, sear
   };
 
   const renderHighlightedText = (): React.ReactNode => {
-    if (!searchTerm || !searchTerm.trim()) {
+    const normalizedTerm = normalizeSearchTerm(searchTerm || '');
+
+    if (!normalizedTerm || normalizedTerm.length < 2) {
       return <Text style={styles.text}>{phrase.text}</Text>;
     }
 
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const escapedTerm = escapeRegExp(normalizedTerm);
+    const regex = new RegExp(`(${escapedTerm})`, 'gi');
     const parts = phrase.text.split(regex);
 
     return (
